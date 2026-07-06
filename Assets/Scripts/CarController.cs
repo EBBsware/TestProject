@@ -90,26 +90,34 @@ public class CarController : MonoBehaviour
 
     void LateUpdate()
     {
-        // Unity'nin fizik motoru (WheelJoint) FixedUpdate'den sonra esneme yapıp açıyı bozuyordu.
-        // Bu yüzden açıyı her karenin EEEEEEN sonunda (LateUpdate) tekrar zorla kelepçeliyoruz.
-        
         float currentAngle = rb.rotation % 360f;
         if (currentAngle > 180f) currentAngle -= 360f;
         else if (currentAngle < -180f) currentAngle += 360f;
 
+        float targetAngle = currentAngle;
+
         if (currentAngle > maxBackwardTilt)
         {
-            // Hem fiziksel hem görsel olarak dondur
-            transform.rotation = Quaternion.Euler(0, 0, maxBackwardTilt);
-            rb.rotation = maxBackwardTilt;
-            rb.angularVelocity = 0f; 
+            targetAngle = maxBackwardTilt;
+            rb.angularVelocity = 0f;
         }
         else if (currentAngle < -maxForwardTilt)
         {
-            transform.rotation = Quaternion.Euler(0, 0, -maxForwardTilt);
-            rb.rotation = -maxForwardTilt;
-            rb.angularVelocity = 0f; 
+            targetAngle = -maxForwardTilt;
+            rb.angularVelocity = 0f;
         }
+        else if (!isAccelerating && !isBraking)
+        {
+            // Boşta: yavaşça düzle (doğal öne yatışı düzeltiyor)
+            targetAngle = Mathf.LerpAngle(currentAngle, 0f, Time.deltaTime * 3f);
+            rb.angularVelocity *= 0.9f;
+        }
+
+        rb.rotation = targetAngle;
+
+        // Görsel rotasyonu güncelle ama X ve Y'yi koru — mirror bozulmasın!
+        Vector3 e = transform.eulerAngles;
+        transform.rotation = Quaternion.Euler(e.x, e.y, targetAngle);
     }
 
     // Geri Dönüş (Reset) Butonu İçin
