@@ -23,7 +23,6 @@ public class CarController : MonoBehaviour
     private Rigidbody2D rb;
     private JointMotor2D motor;
     
-    // Başlangıç pozisyonunu hafızada tutmak için:
     private Vector2 startPosition;
     private Quaternion startRotation;
     private Vector2 backWheelStartPos;
@@ -33,22 +32,30 @@ public class CarController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         
-        // Oyun başladığı anki konumu kaydet
         startPosition = transform.position;
         startRotation = transform.rotation;
 
-        // Tekerleklerin de başlangıç konumunu kaydet (Işınlanırken patlamaması için)
         if (backWheel != null && backWheel.connectedBody != null)
             backWheelStartPos = backWheel.connectedBody.transform.position;
         if (frontWheel != null && frontWheel.connectedBody != null)
             frontWheelStartPos = frontWheel.connectedBody.transform.position;
         
-        // Senin fikrini uyguluyoruz: Ağırlık merkezindeki tüm hileleri siliyoruz.
-        // Artık gerçek bir binek araç gibi orijinal ağırlık merkezinde kalacak.
-        rb.centerOfMass = Vector2.zero; 
-        
-        // Açısal sürtünmeyi normale alıyoruz
-        rb.angularDamping = 1f;
+
+        // Ağırlık merkezini iki WheelJoint'in tam ortasına al
+        if (backWheel != null && frontWheel != null)
+        {
+            Vector2 backAnchor  = backWheel.anchor;   // Local space anchor
+            Vector2 frontAnchor = frontWheel.anchor;  // Local space anchor
+            Vector2 midPoint    = (backAnchor + frontAnchor) / 2f;
+            rb.centerOfMass     = midPoint;
+        }
+        else
+        {
+            rb.centerOfMass = Vector2.zero;
+        }
+
+        // 0.3 saniye bekleyip süspansiyon yerleştikten sonra dinlenme açısını kaydet
+        StartCoroutine(CalibrateRestAngle());
 
         if (backWheel != null)
         {
@@ -60,9 +67,8 @@ public class CarController : MonoBehaviour
         }
     }
 
-    void FixedUpdate() // Fizik işlemleri olduğu için Update yerine FixedUpdate kullanıyoruz
+    void FixedUpdate()
     {
-        // 1. Motor Hareketi
         if (backWheel != null)
         {
             if (isAccelerating)
@@ -84,45 +90,42 @@ public class CarController : MonoBehaviour
                 backWheel.motor = motor;
             }
         }
-
-        // Açı limiti kontrolü LateUpdate'e taşındı (Aşağıda)
     }
 
     void LateUpdate()
     {
-        // Unity'nin fizik motoru (WheelJoint) FixedUpdate'den sonra esneme yapıp açıyı bozuyordu.
-        // Bu yüzden açıyı her karenin EEEEEEN sonunda (LateUpdate) tekrar zorla kelepçeliyoruz.
-        
         float currentAngle = rb.rotation % 360f;
         if (currentAngle > 180f) currentAngle -= 360f;
         else if (currentAngle < -180f) currentAngle += 360f;
 
+        // Gaz veya fren: limit uygula
         if (currentAngle > maxBackwardTilt)
         {
-            // Hem fiziksel hem görsel olarak dondur
-            transform.rotation = Quaternion.Euler(0, 0, maxBackwardTilt);
             rb.rotation = maxBackwardTilt;
-            rb.angularVelocity = 0f; 
+            rb.angularVelocity = 0f;
         }
         else if (currentAngle < -maxForwardTilt)
         {
-            transform.rotation = Quaternion.Euler(0, 0, -maxForwardTilt);
             rb.rotation = -maxForwardTilt;
-            rb.angularVelocity = 0f; 
+            rb.angularVelocity = 0f;
+        }
+
+        // Boşta: yavaşça 0 dereceye dön (doğal öne yatışı düzeltiyor)
+        if (!isAccelerating && !isBraking)
+        {
+            float corrected = Mathf.LerpAngle(currentAngle, 0f, Time.deltaTime * 2f);
+            rb.rotation = corrected;
+            rb.angularVelocity *= 0.85f;
         }
     }
 
-    // Geri Dönüş (Reset) Butonu İçin
     public void ResetCar()
     {
-        // Önce arabanın kendi konumunu, açısını ve hızını sıfırla
         transform.position = startPosition;
         transform.rotation = startRotation;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
 
-        // SONRA tekerlekleri tam başladıkları yere ışınla ve hızlarını sıfırla. 
-        // Aksi takdirde gövde ışınlanırken tekerlekler eski yerinde kalır ve yaylar gerilip patlar!
         if (backWheel != null && backWheel.connectedBody != null)
         {
             backWheel.connectedBody.transform.position = backWheelStartPos;
@@ -137,7 +140,6 @@ public class CarController : MonoBehaviour
         }
     }
 
-    // UI Butonları
     public void AccelerateDown() { isAccelerating = true; }
     public void AccelerateUp() { isAccelerating = false; }
     public void BrakeDown() { isBraking = true; }

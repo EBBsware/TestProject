@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 188359299}
   - component: {fileID: 188359302}
   - component: {fileID: 188359301}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel_Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -228,14 +228,14 @@ Rigidbody2D:
   m_Mass: 4
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1.5
-  m_Material: {fileID: 0}
+  m_GravityScale: 1
+  m_Material: {fileID: 6200000, guid: 62fca04cf8911284082f786bbd3f17e7, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
@@ -457,7 +457,7 @@ GameObject:
   - component: {fileID: 389369213}
   - component: {fileID: 389369216}
   - component: {fileID: 389369215}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Wheel_Rear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -554,14 +554,14 @@ Rigidbody2D:
   m_Mass: 4
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1.5
-  m_Material: {fileID: 0}
+  m_GravityScale: 1
+  m_Material: {fileID: 6200000, guid: 62fca04cf8911284082f786bbd3f17e7, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
@@ -997,7 +997,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -300, y: 200}
+  m_AnchoredPosition: {x: -1, y: 105}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1012277404
@@ -1248,7 +1248,7 @@ GameObject:
   - component: {fileID: 1442366379}
   - component: {fileID: 1442366378}
   - component: {fileID: 1442366381}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Car_Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1601,8 +1601,8 @@ Rigidbody2D:
   m_Mass: 40
   m_LinearDamping: 0.5
   m_AngularDamping: 0.5
-  m_GravityScale: 1.5
-  m_Material: {fileID: 0}
+  m_GravityScale: 1
+  m_Material: {fileID: 6200000, guid: bb68ba337f390304f9a85cfa6157069f, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1612,7 +1612,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &1442366381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1629,10 +1629,9 @@ MonoBehaviour:
   frontWheel: {fileID: 1442366379}
   motorTorque: 300
   maxMotorSpeed: -5000
-  brakeForce: 1000
-  maxBackwardTilt: 5
+  brakeForce: 300
+  maxBackwardTilt: 2
   maxForwardTilt: 2
-  stabilizationForce: 1500
 --- !u!1 &1593826971
 GameObject:
   m_ObjectHideFlags: 0
