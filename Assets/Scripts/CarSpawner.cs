@@ -66,17 +66,6 @@ public class CarSpawner : MonoBehaviour
         Rigidbody2D carRb = (carController != null) ? carController.GetComponent<Rigidbody2D>() : carObj.GetComponentInChildren<Rigidbody2D>();
         Transform targetTransform = (carController != null) ? carController.transform : carObj.transform;
 
-        // Eğer arabanın gövdesi Prefab içinde yukarı kaldırılmışsa local Y yüksekliğini sıfırla (havadan düşmesin)
-        if (carController != null && carController.transform != carObj.transform)
-        {
-            Vector3 localPos = carController.transform.localPosition;
-            if (Mathf.Abs(localPos.y) > 0.3f)
-            {
-                localPos.y = 0f;
-                carController.transform.localPosition = localPos;
-            }
-        }
-
         // Arabanın yolun ve arka planın önünde (Order: 10) kalmasını sağla
         SpriteRenderer[] srs = carObj.GetComponentsInChildren<SpriteRenderer>(true);
         foreach (var sr in srs)
