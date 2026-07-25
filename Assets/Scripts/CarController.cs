@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
@@ -138,6 +139,11 @@ public class CarController : MonoBehaviour
             frontWheel.connectedBody.linearVelocity = Vector2.zero;
             frontWheel.connectedBody.angularVelocity = 0f;
         }
+    }
+
+    private IEnumerator CalibrateRestAngle()
+    {
+        yield return new WaitForSeconds(0.3f);
     }
 
     public void AccelerateDown() { isAccelerating = true; }
