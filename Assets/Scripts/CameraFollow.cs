@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
-    [Tooltip("Takip edilecek araç gövdesi (CarBody objesini buraya sürükleyin)")]
+    [Tooltip("Takip edilecek araç gövdesi")]
     public Transform target;
     
     [Tooltip("Kameranın araca göre konumu (Z değeri -10 kalmalı)")]
@@ -22,7 +22,7 @@ public class CameraFollow : MonoBehaviour
         // Kameranın gitmek istediği asıl hedef pozisyon
         Vector3 targetPosition = target.position + offset;
 
-        // Kamerayı mevcut pozisyonundan hedef pozisyonuna yumuşakça (SmoothDamp) kaydır
+        // Rigidbody2D Interpolate aktif olduğu için LateUpdate içinde yumuşakça kaydırıyoruz
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
 }

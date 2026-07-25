@@ -44,6 +44,7 @@ public class CarSpawner : MonoBehaviour
         // Arabayı sahneye oluştur (Instantiate)
         spawnedCar = Instantiate(carPrefabs[selectedIndex], pos, rot);
         spawnedCar.name = "PlayerCar";
+        Debug.Log("CarSpawner: Başarıyla Doğurulan Araba İndeksi: " + selectedIndex + " (" + carPrefabs[selectedIndex].name + ")");
 
         // Sahnedeki diğer sistemlere yeni arabayı otomatik bağla
         AutoConnectComponents(spawnedCar);
@@ -51,23 +52,27 @@ public class CarSpawner : MonoBehaviour
 
     private void AutoConnectComponents(GameObject carObj)
     {
+        // CarController veya Rigidbody2D gövde objesinde (Car_Body) olabileceği için alt objeleri de tara
+        CarController carController = carObj.GetComponentInChildren<CarController>();
+        Rigidbody2D carRb = (carController != null) ? carController.GetComponent<Rigidbody2D>() : carObj.GetComponentInChildren<Rigidbody2D>();
+        Transform targetTransform = (carController != null) ? carController.transform : carObj.transform;
+
         // 1. Kamera Takibi (CameraFollow)
-        CameraFollow cameraFollow = FindFirstObjectByType<CameraFollow>();
+        CameraFollow cameraFollow = FindAnyObjectByType<CameraFollow>();
         if (cameraFollow != null)
         {
-            cameraFollow.target = carObj.transform;
+            cameraFollow.target = targetTransform;
         }
 
         // 2. Hız Göstergesi (Speedometer)
-        Speedometer speedometer = FindFirstObjectByType<Speedometer>();
+        Speedometer speedometer = FindAnyObjectByType<Speedometer>();
         if (speedometer != null)
         {
-            speedometer.carRigidbody = carObj.GetComponent<Rigidbody2D>();
+            speedometer.carRigidbody = carRb;
         }
 
         // 3. UI Gaz & Fren Butonları (UIButtonController)
-        CarController carController = carObj.GetComponent<CarController>();
-        UIButtonController[] uiButtons = FindObjectsByType<UIButtonController>(FindObjectsSortMode.None);
+        UIButtonController[] uiButtons = FindObjectsByType<UIButtonController>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
         foreach (UIButtonController button in uiButtons)
         {
             button.carController = carController;

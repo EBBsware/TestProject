@@ -91,15 +91,12 @@ public class CarController : MonoBehaviour
                 backWheel.motor = motor;
             }
         }
-    }
 
-    void LateUpdate()
-    {
+        // Fizik Dengeleme (Stabilizer)
         float currentAngle = rb.rotation % 360f;
         if (currentAngle > 180f) currentAngle -= 360f;
         else if (currentAngle < -180f) currentAngle += 360f;
 
-        // Gaz veya fren: limit uygula
         if (currentAngle > maxBackwardTilt)
         {
             rb.rotation = maxBackwardTilt;
@@ -111,10 +108,9 @@ public class CarController : MonoBehaviour
             rb.angularVelocity = 0f;
         }
 
-        // Boşta: yavaşça 0 dereceye dön (doğal öne yatışı düzeltiyor)
         if (!isAccelerating && !isBraking)
         {
-            float corrected = Mathf.LerpAngle(currentAngle, 0f, Time.deltaTime * 2f);
+            float corrected = Mathf.LerpAngle(currentAngle, 0f, Time.fixedDeltaTime * 2f);
             rb.rotation = corrected;
             rb.angularVelocity *= 0.85f;
         }

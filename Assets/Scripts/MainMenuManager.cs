@@ -7,17 +7,18 @@ public class MainMenuManager : MonoBehaviour
     [Tooltip("Yüklenecek oyun sahnesinin adı (Varsayılan: SampleScene)")]
     public string gameSceneName = "SampleScene";
 
+    [Tooltip("Yüklenecek garaj sahnesinin adı (Varsayılan: GarageScene)")]
+    public string garageSceneName = "GarageScene";
+
     [Header("UI Panelleri (İsteğe Bağlı)")]
     [Tooltip("Ayarlar paneli varsa buraya sürükleyin")]
     public GameObject settingsPanel;
 
     /// <summary>
     /// Oyunu başlatır ve belirtilen oyun sahnesine geçiş yapar.
-    /// Button OnClick() olayına bağlanır.
     /// </summary>
     public void PlayGame()
     {
-        // Zamandan emin olmak için (Pause'da kalmış olabilir) timeScale'i 1 yapalım
         Time.timeScale = 1f;
 
         if (!string.IsNullOrEmpty(gameSceneName))
@@ -26,14 +27,25 @@ public class MainMenuManager : MonoBehaviour
         }
         else
         {
-            // Eğer sahne ismi boşsa listedeki 1. indexli sahneyi yükle
             SceneManager.LoadScene(1);
         }
     }
 
     /// <summary>
-    /// Oyundan çıkış yapar. Unity Editor'de çalışırken konsola da bilgi yazar.
-    /// Button OnClick() olayına bağlanır.
+    /// Garaj sahnesine geçiş yapar.
+    /// </summary>
+    public void OpenGarage()
+    {
+        Time.timeScale = 1f;
+
+        if (!string.IsNullOrEmpty(garageSceneName))
+        {
+            SceneManager.LoadScene(garageSceneName);
+        }
+    }
+
+    /// <summary>
+    /// Oyundan çıkış yapar.
     /// </summary>
     public void QuitGame()
     {
@@ -42,7 +54,7 @@ public class MainMenuManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ayarlar panelini açar (Panel atanmışsa aktif eder).
+    /// Ayarlar panelini açar.
     /// </summary>
     public void OpenSettings()
     {
