@@ -1045,6 +1045,7 @@ MonoBehaviour:
   - {fileID: 4239185548408466210, guid: 7e13de742060b2a41851c543792ad17f, type: 3}
   - {fileID: 954753037783518144, guid: 08ca27090699507449c066b3a1f81659, type: 3}
   - {fileID: 3304890759417959748, guid: c643a4c149d0b96499d7df532ee755cb, type: 3}
+  - {fileID: 4094235577732987831, guid: d81e64edcaf51964784cd4691f24e3ab, type: 3}
   previewSpawnPoint: {fileID: 1921130945}
   carNameText: {fileID: 0}
   gameSceneName: SampleScene
