@@ -1,6 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+#if ENABLE_INPUT_SYSTEM
+using UnityEngine.InputSystem;
+#endif
+
 public class PauseManager : MonoBehaviour
 {
     [Header("UI Elemanları")]
@@ -16,17 +20,45 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
-        // Klavyede ESC tuşuna basıldığında oyunu duraklat veya devam ettir
-        if (Input.GetKeyDown(KeyCode.Escape))
+        bool escapePressed = false;
+
+#if ENABLE_INPUT_SYSTEM
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            if (isPaused)
+            escapePressed = true;
+        }
+#else
+        try
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                ResumeGame();
+                escapePressed = true;
             }
-            else
-            {
-                PauseGame();
-            }
+        }
+        catch
+        {
+            // Input System aktifse eski Input API hata vermesin
+        }
+#endif
+
+        if (escapePressed)
+        {
+            TogglePause();
+        }
+    }
+
+    /// <summary>
+    /// Ekrandaki Pause butonuna dokunulduğunda veya ESC'ye basıldığında duraklatma durumunu değiştirir.
+    /// </summary>
+    public void TogglePause()
+    {
+        if (isPaused)
+        {
+            ResumeGame();
+        }
+        else
+        {
+            PauseGame();
         }
     }
 
@@ -75,14 +107,21 @@ public class PauseManager : MonoBehaviour
     {
         Time.timeScale = 1f;
         isPaused = false;
-        
-        if (!string.IsNullOrEmpty(mainMenuSceneName))
+
+        try
         {
-            SceneManager.LoadScene(mainMenuSceneName);
+            if (!string.IsNullOrEmpty(mainMenuSceneName))
+            {
+                SceneManager.LoadScene(mainMenuSceneName);
+            }
+            else
+            {
+                SceneManager.LoadScene(0);
+            }
         }
-        else
+        catch (System.Exception ex)
         {
-            SceneManager.LoadScene(0);
+            Debug.LogError("Ana Menüye yüklenirken hata oluştu! Lütfen MainMenuScene sahnesini File -> Build Settings alanına eklediğinizden emin olun. Hata: " + ex.Message);
         }
     }
 }
