@@ -44,6 +44,15 @@ public class CarSpawner : MonoBehaviour
         // Arabayı sahneye oluştur (Instantiate)
         spawnedCar = Instantiate(carPrefabs[selectedIndex], pos, rot);
         spawnedCar.name = "PlayerCar";
+        spawnedCar.SetActive(true);
+
+        // Doblo veya altındaki parçalar kapalıysa hepsini otomatik aktif (Enable) et
+        Transform[] allTransforms = spawnedCar.GetComponentsInChildren<Transform>(true);
+        foreach (Transform t in allTransforms)
+        {
+            t.gameObject.SetActive(true);
+        }
+
         Debug.Log("CarSpawner: Başarıyla Doğurulan Araba İndeksi: " + selectedIndex + " (" + carPrefabs[selectedIndex].name + ")");
 
         // Sahnedeki diğer sistemlere yeni arabayı otomatik bağla
