@@ -9,7 +9,7 @@ public class CarSelectionManager : MonoBehaviour
     public GameObject[] carPrefabs;
 
     [Header("Garaj Sergileme Konumu")]
-    [Tooltip("Arabanın garajda sergileneceği konum (Boş bırakılırsa bu objenin konumu kullanılır)")]
+    [Tooltip("Arabanın garajda sergileneceği konum (Boş bırakılırsa ekranın tam ortası 0,0,0 kullanılır)")]
     public Transform previewSpawnPoint;
 
     [Header("UI Elemanları (İsteğe Bağlı)")]
@@ -132,15 +132,16 @@ public class CarSelectionManager : MonoBehaviour
 
         if (carPrefabs[currentCarIndex] != null)
         {
-            Vector3 pos = (previewSpawnPoint != null) ? previewSpawnPoint.position : transform.position;
-            Quaternion rot = (previewSpawnPoint != null) ? previewSpawnPoint.rotation : transform.rotation;
+            // SpawnPoint yoksa ekranın TAM ORTASI olan Vector3.zero (0,0,0) kullan
+            Vector3 targetPos = (previewSpawnPoint != null) ? previewSpawnPoint.position : Vector3.zero;
+            Quaternion rot = (previewSpawnPoint != null) ? previewSpawnPoint.rotation : Quaternion.identity;
 
             // Seçilen arabanın Prefab'ını garajda canlı oluştur
-            currentPreviewObject = Instantiate(carPrefabs[currentCarIndex], pos, rot);
+            currentPreviewObject = Instantiate(carPrefabs[currentCarIndex], targetPos, rot);
             currentPreviewObject.name = "GaragePreview_" + carPrefabs[currentCarIndex].name;
             currentPreviewObject.SetActive(true);
 
-            // Doblo veya altındaki Car_Body objeleri kapalıysa hepsini otomatik aktif (Enable) et
+            // Altındaki tüm parçaları otomatik aktif et
             Transform[] allTransforms = currentPreviewObject.GetComponentsInChildren<Transform>(true);
             foreach (Transform t in allTransforms)
             {
@@ -152,6 +153,21 @@ public class CarSelectionManager : MonoBehaviour
             foreach (var rb in rbs)
             {
                 rb.simulated = false;
+            }
+
+            // Arka planın önünde kalabilmesi için SpriteRenderer katman sırasını (Order in Layer) öne al
+            SpriteRenderer[] srs = currentPreviewObject.GetComponentsInChildren<SpriteRenderer>(true);
+            foreach (var sr in srs)
+            {
+                sr.sortingOrder += 10;
+            }
+
+            // İç kayması olan arabaların (Car_Body) gövdesini merkeze hizala
+            CarController carCtrl = currentPreviewObject.GetComponentInChildren<CarController>();
+            if (carCtrl != null && carCtrl.transform != currentPreviewObject.transform)
+            {
+                Vector3 childOffset = carCtrl.transform.localPosition;
+                currentPreviewObject.transform.position = targetPos - childOffset;
             }
 
             // Metin varsa araba adını ekranda güncelle

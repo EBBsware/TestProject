@@ -36,6 +36,34 @@ public class CarController : MonoBehaviour
         startPosition = transform.position;
         startRotation = transform.rotation;
 
+        // Tekerlek bağlantısı (WheelJoint2D.connectedBody) kopmuşsa otomatik tamir et
+        Transform parentTransform = (transform.parent != null) ? transform.parent : transform;
+        Rigidbody2D[] childRbs = parentTransform.GetComponentsInChildren<Rigidbody2D>();
+
+        if (backWheel != null && backWheel.connectedBody == null)
+        {
+            foreach (var r in childRbs)
+            {
+                if (r.gameObject != this.gameObject && (r.name.ToLower().Contains("rear") || r.name.ToLower().Contains("back")))
+                {
+                    backWheel.connectedBody = r;
+                    break;
+                }
+            }
+        }
+
+        if (frontWheel != null && frontWheel.connectedBody == null)
+        {
+            foreach (var r in childRbs)
+            {
+                if (r.gameObject != this.gameObject && r.name.ToLower().Contains("front"))
+                {
+                    frontWheel.connectedBody = r;
+                    break;
+                }
+            }
+        }
+
         if (backWheel != null && backWheel.connectedBody != null)
             backWheelStartPos = backWheel.connectedBody.transform.position;
         if (frontWheel != null && frontWheel.connectedBody != null)
